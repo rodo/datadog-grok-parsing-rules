@@ -1,0 +1,7 @@
+workerSourceRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:level}\s+\|\|\s+WorkerSourceTask\{id\=%{notSpace:source}\}\s+%{notSpace:token_2}\s+offsets\s+for\s+%{integer:offset}\s+acknowledged\s+messages\s+\[%{notSpace:javaclass}]
+
+tableRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:level}\s+\|\|\s+\[SF_KAFKA_CONNECTOR\]\spurge\s%{integer:nb_files}\sfiles from stage:\s+%{notSpace:table}\s+\[%{notSpace:javaclass}\]
+
+streamingRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:level}\s+Postgres\|%{notSpace:database}\|%{notSpace:action}\s+%{regex(".*"):message}\s+\[io\.debezium\.%{notSpace:javaclass}\]
+
+logPositionRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:level}\s+\|\|\s+%{regex(".*"):message}\s+\[io\.debezium\.%{notSpace:javaclass}\]
