@@ -5,3 +5,6 @@ autoAnalyzeRule %{date("yyyy-MM-dd HH:mm:ss z"):date}::@:\[%{integer:group_id}\]
 
 
 autoVacuumRule %{date("yyyy-MM-dd HH:mm:ss z"):date}\:\:@\:\[%{integer:group_id}\]\:%{notSpace:severity}\:\s+%{data:postgresql.operation}\s"%{notSpace:table}"\:\sindex\sscans\:\s%{integer:index_scan}\s+pages\:\s%{integer:pages_removed}\sremoved,%{data:data}\stuples: %{integer:tuples.removed} removed, %{integer:tuples.remain} remain%{data:data}
+
+
+checkpointStartRule %{date("yyyy-MM-dd HH:mm:ss z"):date}\:\:@\:\[%{integer:group_id}\]\:%{notSpace:severity}\:\s+%{data:postgresql.operation}:\stime
