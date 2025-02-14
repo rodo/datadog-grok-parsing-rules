@@ -1,7 +1,41 @@
-workerSourceRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:level}\s+\|\|\s+WorkerSourceTask\{id\=%{notSpace:source}\}\s+%{notSpace:token_2}\s+offsets\s+for\s+%{integer:offset}\s+acknowledged\s+messages\s+\[%{notSpace:javaclass}]
+# snapshot
+snapshotResult1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+Postgres\|%{notSpace:base_source}\|%{notSpace:action}\s+Snapshot ended with SnapshotResult\s+\[status=%{word:snapshot_status},\s+%{regex(".*"):message_na1}schema=%{word:schema}, table=%{word:table_source}\]%{regex(".*"):message_na2}\s+\[%{notSpace:javaclass}\]
 
-tableRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:level}\s+\|\|\s+\[SF_KAFKA_CONNECTOR\]\spurge\s%{integer:nb_files}\sfiles from stage:\s+%{notSpace:table}\s+\[%{notSpace:javaclass}\]
+snapshotFinished1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+Postgres\|%{notSpace:base_source}\|%{notSpace:action}\s+Finished exporting %{integer:records} records for table '%{notSpace:table}' \(%{integer:idx_loop} of %{integer:nb_loop} tables\); total duration '%{notSpace:duration}'\s+\[%{notSpace:javaclass}\]
 
-streamingRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:level}\s+Postgres\|%{notSpace:database}\|%{notSpace:action}\s+%{regex(".*"):message}\s+\[io\.debezium\.%{notSpace:javaclass}\]
+exportingTableRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+Postgres\|%{notSpace:base_source}\|%{notSpace:action}\s+%{regex(".*"):message}\s+'%{notSpace:table}'\s+\(1 of %{integer:nb_tables} tables\)\s+\[%{notSpace:javaclass}\]
 
-logPositionRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:level}\s+\|\|\s+%{regex(".*"):message}\s+\[io\.debezium\.%{notSpace:javaclass}\]
+streamingRuleExported %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+Postgres\|%{notSpace:base_source}\|%{notSpace:action}\s+Exported\s%{integer:records}\srecords for table '%{regex(".*"):table}' after %{regex(".*"):time}\s+\[%{notSpace:javaclass}\]
+
+# starting
+
+instantiatedRule %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+%{notSpace:action} task %{notSpace:base_source}-0\s+with version\s%{notSpace:version} of type %{notSpace:connector_type}\s+\[%{notSpace:javaclass}\]
+
+
+uploadRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+\[SF_KAFKA_CONNECTOR\]\s%{word:action} successful for stageName:SNOWFLAKE_KAFKA_CONNECTOR_snowflake_%{notSpace:base_source}_STAGE_%{notSpace:sf_table},\s+filePath:%{notSpace:filePath}\s+\[%{notSpace:javaclass}\]
+
+purgeRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+\[SF_KAFKA_CONNECTOR\]\s%{word:action}\s%{integer:nb_files}\sfiles from stage:\s+SNOWFLAKE_KAFKA_CONNECTOR_snowflake_%{notSpace:base_source}_STAGE_%{notSpace:table_dest}\s+\[%{notSpace:javaclass}\]
+
+psqlRule1 psql:\s+%{word:status}:\s+connection to server at "%{notSpace:connection}" \(10.0.0.149\), port 5432 failed: FATAL:  database "%{word:base_source}" does not exist
+
+workerSourceRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+WorkerSourceTask\{id\=debezium_%{notSpace:base_source}-0\}\s+%{notSpace:action}\s+offsets\s+for\s+%{integer:offset}\s+acknowledged\s+messages\s+\[%{notSpace:javaclass}]
+
+streamingRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+Postgres\|%{notSpace:base_source}\|%{notSpace:action}\s+%{regex(".*"):message}\s+\[%{notSpace:javaclass}\]
+
+logPositionRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+%{regex(".*"):message}\s+\[io\.debezium\.%{notSpace:javaclass}\]
+
+publicationRule1 org.postgresql.util.PSQLException:\s+%{word:status}:\s%{regex(".*"):error_message}
+
+recordsRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+%{integer:records}\s%{data:action}\ssent during previous %{notSpace:duration}, last recorded offset of \{server=%{word:base_source}\} partition is \{lsn_proc=%{integer:lsn_proc}, messageType=%{word:message}, lsn_commit=%{integer:lsn_commit}, lsn=%{integer:lsn}.*\s+\[%{notSpace:javaclass}\]
+
+flushpipeRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+\[SF_KAFKA_CONNECTOR\]\s%{word:action}\s+SNOWFLAKE_KAFKA_CONNECTOR_snowflake_%{notSpace:base_source}_PIPE_%{notSpace:target}, flush pipe\:\s%{data:file}\s+\[%{notSpace:javaclass}\]
+
+searchRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+\[SF_KAFKA_CONNECTOR\]\s+%{word:action} %{integer:files} files in ingest report, found %{integer:found}\s+\[%{notSpace:javaclass}\]
+
+pipeRule2 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+\[SF_KAFKA_CONNECTOR\]\s+%{word:action}\s+SNOWFLAKE_KAFKA_CONNECTOR_snowflake_%{notSpace:base_source}_PIPE_%{notSpace:token1},\s+ingest\s+files\:\s+%{notSpace:ingest_file}%{notSpace:http.url}\s+\[com\.snowflake\.kafka\.connector\.internal\.SnowflakeSinkServiceV1\]
+
+insertRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+%{data:action}\s:\shttps://%{notSpace:server}\:%{integer:port}/v1/data/pipes/smartway.cdc.SNOWFLAKE_KAFKA_CONNECTOR_snowflake_%{notSpace:base_source}_PIPE_%{notSpace:url}\s+\[%{notSpace:javaclass}\]
+
+autoFilledRule1 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+Attempting\s+to\s+unmarshall\s+%{notSpace:token_1}\s+response\s+-\s+HttpResponseProxy\{HTTP%{notSpace:http.url}\s+%{integer:http.status_code}\s+OK\s+\[Date\:\s+Wed,\s+27\s+Nov\s+2024\s+%{date("HH:mm:ss"):date_1}\s+GMT,Wed,\s+27\s+Nov\s+2024\s+%{date("HH:mm:ss"):date_2}\s+GMT,\s+%{data::keyvalue(":"," *\\[;,\\]=}/")}
+
+autoFilledRule3 %{date("yyyy-MM-dd HH:mm:ss,SSS"):date}\s+%{word:status}\s+\|\|\s+Final\s+History\s+URIBuilder\s+-\s+%{notSpace:http.url}\s+\[net\.snowflake\.ingest\.connection\.RequestBuilder\]
